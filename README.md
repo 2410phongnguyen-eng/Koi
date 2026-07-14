@@ -1,4 +1,3 @@
-
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
@@ -37,7 +36,7 @@
       overflow-x:hidden;
     }
     a{color:inherit; text-decoration:none}
-    button,input{
+    button,input,textarea{
       font:inherit;
     }
 
@@ -148,7 +147,6 @@
       content:"";
       position:absolute;
       border-radius:999px;
-      filter: blur(0);
       pointer-events:none;
     }
     .hero-card::before{
@@ -310,21 +308,23 @@
       box-shadow: 0 8px 20px rgba(57, 33, 25, .05);
       min-height:52px;
     }
-    .field input{
+    .field input, .field textarea{
       border:none;
       outline:none;
       background:transparent;
       width:100%;
       color:var(--text);
       font-size:.98rem;
+      resize:none;
     }
-    .field input::placeholder{color:#8a766f}
+    .field input::placeholder, .field textarea::placeholder{color:#8a766f}
     .field .ico{
       width:22px;
       display:grid;
       place-items:center;
       color:var(--red);
       font-weight:900;
+      flex:0 0 auto;
     }
 
     .grid{
@@ -438,7 +438,7 @@
     .manage-body{
       padding:20px;
       display:grid;
-      grid-template-columns: 1fr 1fr auto;
+      grid-template-columns: 1fr 1fr 1.1fr auto;
       gap:12px;
     }
     .manage .field{
@@ -447,10 +447,10 @@
       box-shadow:none;
       color:#fff;
     }
-    .manage .field input{
+    .manage .field input, .manage .field textarea{
       color:#fff;
     }
-    .manage .field input::placeholder{color:rgba(247,234,211,.5)}
+    .manage .field input::placeholder, .manage .field textarea::placeholder{color:rgba(247,234,211,.5)}
     .manage .btn.primary{
       min-height:52px;
       box-shadow:none;
@@ -527,7 +527,6 @@
       color:var(--muted);
     }
 
-    /* Modal */
     .modal{
       position:fixed;
       inset:0;
@@ -540,7 +539,7 @@
     }
     .modal.show{display:flex}
     .modal-card{
-      width:min(520px, 100%);
+      width:min(560px, 100%);
       background: linear-gradient(180deg, rgba(255,248,235,.98), rgba(243,234,215,.98));
       border-radius: 28px;
       box-shadow: 0 30px 70px rgba(0,0,0,.35);
@@ -632,12 +631,11 @@
             <h2>Chào mừng đến với <span class="accent">Kho Tàng Của Koi</span></h2>
             <p>
               Đây là trang chủ tập hợp các website của Koi được xếp gọn gàng, dễ truy cập, dễ thêm mới và dễ quản lý.
-              Chỉ cần mở khóa chỉnh sửa, bạn có thể thêm hoặc xóa liên kết theo ý muốn (mật khẩu là do Koi cung cấp).
+              Chỉ cần mở khóa chỉnh sửa, bạn có thể thêm hoặc xóa liên kết theo ý muốn.
             </p>
             <div class="hero-actions">
               <button class="btn primary" onclick="scrollToSection('sites')">Mở danh sách website</button>
               <button class="btn dark" id="unlockBtn" onclick="openPasswordModal()">Mở khóa chỉnh sửa</button>
-            
             </div>
           </div>
           <div class="stat-box">
@@ -696,7 +694,7 @@
         <div class="manage-head">
           <div>
             <h3>Thêm website mới</h3>
-            <p>Ví dụ: tên website và đường dẫn của bạn.</p>
+            <p>Ví dụ: tên website, đường dẫn và ghi chú.</p>
           </div>
           <button class="btn soft" id="lockToggleBtn" onclick="toggleLockPanel()">Mở bảng mật khẩu</button>
         </div>
@@ -708,6 +706,10 @@
           <div class="field">
             <div class="ico">⛓</div>
             <input id="newUrl" type="url" placeholder="Dán URL đầy đủ" disabled />
+          </div>
+          <div class="field" style="padding-top:12px;padding-bottom:12px;align-items:flex-start;">
+            <div class="ico">📝</div>
+            <textarea id="newDesc" rows="1" placeholder="Ghi chú ngắn" disabled></textarea>
           </div>
           <button class="btn primary" id="addBtn" onclick="addSite()" disabled>Thêm</button>
         </div>
@@ -751,7 +753,6 @@
     </section>
   </main>
 
-  <!-- Password modal -->
   <div class="modal" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <div class="modal-head">
@@ -773,6 +774,34 @@
     </div>
   </div>
 
+  <div class="modal" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="editTitle">Sửa website</h3>
+        <p>Chỉnh tên, đường dẫn và ghi chú của website.</p>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <div class="ico">✎</div>
+          <input id="editTitleInput" type="text" placeholder="Tên website" />
+        </div>
+        <div class="field">
+          <div class="ico">⛓</div>
+          <input id="editUrlInput" type="url" placeholder="URL đầy đủ" />
+        </div>
+        <div class="field" style="padding-top:12px;padding-bottom:12px;align-items:flex-start;">
+          <div class="ico">📝</div>
+          <textarea id="editDescInput" rows="3" placeholder="Ghi chú"></textarea>
+        </div>
+        <div id="editMsg" class="error"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn soft" onclick="closeEditModal()">Hủy</button>
+        <button class="btn primary" onclick="saveEditSite()">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const PASSWORD = "24102011";
     const STORAGE_KEY = "koi_sites_v1";
@@ -782,20 +811,18 @@
       {
         title: "Từ điển ngoại ngữ của Koi",
         url: "https://2410phongnguyen-eng.github.io/-/",
-        desc: "Nơi bạn có thể tra cứu từ vựng tiếng Anh,Trung và Nhật theo mọi chủ đề.Đồng thời,cũng có thể luyện tập nghe, nói các từ vựng."
+        desc: "Nơi bạn có thể tra cứu từ vựng tiếng Anh, Trung và Nhật theo mọi chủ đề."
       },
       {
         title: "Phòng thực hành hóa học của Koi",
         url: "https://2410phongnguyen-eng.github.io/----/",
-        desc: "Nơi bạn có thể thực hành các thí nghiệm hóa học .Từ những chất ban đầu bạn có thể mở khoa các chất mới bằng tài năng hóa học."
-      },
-      
-
-      
+        desc: "Nơi bạn có thể thực hành các thí nghiệm hóa học và mở khóa chất mới."
+      }
     ];
 
     let sites = loadSites();
     let isUnlocked = sessionStorage.getItem(AUTH_KEY) === "1";
+    let editIndex = -1;
 
     const grid = document.getElementById("cardGrid");
     const emptyState = document.getElementById("emptyState");
@@ -808,8 +835,15 @@
     const passwordMsg = document.getElementById("passwordMsg");
     const newTitle = document.getElementById("newTitle");
     const newUrl = document.getElementById("newUrl");
+    const newDesc = document.getElementById("newDesc");
     const addBtn = document.getElementById("addBtn");
     const lockToggleBtn = document.getElementById("lockToggleBtn");
+
+    const editModal = document.getElementById("editModal");
+    const editTitleInput = document.getElementById("editTitleInput");
+    const editUrlInput = document.getElementById("editUrlInput");
+    const editDescInput = document.getElementById("editDescInput");
+    const editMsg = document.getElementById("editMsg");
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -862,6 +896,7 @@
       editState.textContent = isUnlocked ? "Đã mở" : "Đã khóa";
       newTitle.disabled = !isUnlocked;
       newUrl.disabled = !isUnlocked;
+      newDesc.disabled = !isUnlocked;
       addBtn.disabled = !isUnlocked;
       lockToggleBtn.textContent = isUnlocked ? "Khóa chỉnh sửa" : "Mở bảng mật khẩu";
 
@@ -873,7 +908,8 @@
         emptyState.classList.add("hidden");
       }
 
-      filtered.forEach((site, index) => {
+      filtered.forEach((site) => {
+        const index = sites.indexOf(site);
         const card = document.createElement("article");
         card.className = "card";
         card.innerHTML = `
@@ -883,7 +919,8 @@
           <span class="url">${escapeHtml(site.url)}</span>
           <div class="actions">
             <a class="link-btn" href="${escapeHtml(site.url)}" target="_blank" rel="noopener noreferrer">Mở trang</a>
-            ${isUnlocked ? `<button class="edit-btn" onclick="removeSite(${sites.indexOf(site)})">Xóa</button>` : ""}
+            ${isUnlocked ? `<button class="edit-btn" onclick="openEditModal(${index})">Sửa</button>
+            <button class="edit-btn" onclick="removeSite(${index})">Xóa</button>` : ""}
           </div>
         `;
         grid.appendChild(card);
@@ -943,17 +980,22 @@
       }
       const title = newTitle.value.trim();
       const url = normalizeUrl(newUrl.value);
+      const desc = newDesc.value.trim();
+
       if(!title || !url){
         toast("Vui lòng nhập đủ tên và đường dẫn.");
         return;
       }
+
       sites.unshift({
         title,
         url,
-        desc: "Website do bạn thêm vào."
+        desc: desc || "Website do bạn thêm vào."
       });
+
       newTitle.value = "";
       newUrl.value = "";
+      newDesc.value = "";
       saveSites();
       toast("Đã thêm website mới.");
     }
@@ -970,6 +1012,52 @@
       sites.splice(index, 1);
       saveSites();
       toast("Đã xóa website.");
+    }
+
+    function openEditModal(index){
+      if(!isUnlocked){
+        openPasswordModal();
+        return;
+      }
+      const site = sites[index];
+      if(!site) return;
+      editIndex = index;
+      editTitleInput.value = site.title || "";
+      editUrlInput.value = site.url || "";
+      editDescInput.value = site.desc || "";
+      editMsg.textContent = "";
+      editModal.classList.add("show");
+      setTimeout(() => editTitleInput.focus(), 100);
+    }
+
+    function closeEditModal(){
+      editModal.classList.remove("show");
+      editMsg.textContent = "";
+      editIndex = -1;
+    }
+
+    function saveEditSite(){
+      if(editIndex < 0 || !sites[editIndex]) return;
+
+      const title = editTitleInput.value.trim();
+      const url = normalizeUrl(editUrlInput.value);
+      const desc = editDescInput.value.trim();
+
+      if(!title || !url){
+        editMsg.textContent = "Tên website và đường dẫn không được để trống.";
+        return;
+      }
+
+      sites[editIndex] = {
+        ...sites[editIndex],
+        title,
+        url,
+        desc: desc || "Liên kết nhanh tới trang web của bạn."
+      };
+
+      saveSites();
+      closeEditModal();
+      toast("Đã lưu thay đổi.");
     }
 
     function toast(message){
@@ -999,23 +1087,36 @@
 
     searchInput.addEventListener("input", renderSites);
     filterInput.addEventListener("input", renderSites);
+
     passwordInput.addEventListener("keydown", (e) => {
       if(e.key === "Enter") checkPassword();
       if(e.key === "Escape") closePasswordModal();
+    });
+
+    [editTitleInput, editUrlInput, editDescInput].forEach(el => {
+      el.addEventListener("keydown", (e) => {
+        if(e.key === "Escape") closeEditModal();
+        if(e.key === "Enter" && e.target !== editDescInput){
+          e.preventDefault();
+          saveEditSite();
+        }
+      });
     });
 
     passwordModal.addEventListener("click", (e) => {
       if(e.target === passwordModal) closePasswordModal();
     });
 
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape") closePasswordModal();
+    editModal.addEventListener("click", (e) => {
+      if(e.target === editModal) closeEditModal();
     });
 
-    // Nếu đã mở khóa từ trước trong phiên hiện tại thì hiện luôn trạng thái chỉnh sửa
-    if(isUnlocked){
-      document.body.classList.add("unlocked");
-    }
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        closePasswordModal();
+        closeEditModal();
+      }
+    });
 
     renderSites();
   </script>
