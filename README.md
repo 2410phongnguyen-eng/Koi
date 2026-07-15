@@ -3,61 +3,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kho Tàng Của Koi</title>
-  <meta name="description" content="Trang chủ của Kho Tàng Của Koi - nơi tổng hợp các website và trang web yêu thích." />
+  <meta name="description" content="Trang chủ Kho Tàng Của Koi - một nơi lưu trữ các website yêu thích với giao diện thanh lịch và tinh tế." />
   <style>
     :root{
-      --bg: #f3ead7;
-      --bg-2: #efe2c8;
-      --card: rgba(255,255,255,.55);
-      --card-2: rgba(255,248,235,.8);
-      --text: #221815;
-      --muted: #6b584f;
-      --red: #b42318;
-      --red-2: #8f1d15;
-      --black: #171211;
-      --line: rgba(34,24,21,.12);
-      --shadow: 0 16px 40px rgba(57, 33, 25, .12);
-      --shadow-2: 0 10px 24px rgba(57, 33, 25, .10);
-      --radius: 24px;
-      --radius-sm: 18px;
-      --radius-xs: 14px;
+      --bg: #f5ead9;
+      --bg-2: #efe0c7;
+      --paper: rgba(255, 251, 245, .72);
+      --paper-strong: rgba(255, 254, 251, .92);
+      --paper-dark: rgba(28, 22, 20, .92);
+      --text: #241b18;
+      --muted: #705e54;
+      --line: rgba(36, 27, 24, .10);
+      --line-2: rgba(180, 35, 24, .14);
+      --accent: #b42318;
+      --accent-2: #7e231c;
+      --dark: #161110;
+      --shadow: 0 24px 60px rgba(58, 36, 26, .12);
+      --shadow-soft: 0 12px 28px rgba(58, 36, 26, .08);
+      --radius-xl: 34px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max: 1220px;
     }
+
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(180,35,24,.11), transparent 28%),
-        radial-gradient(circle at top right, rgba(23,18,17,.09), transparent 22%),
-        linear-gradient(180deg, var(--bg), var(--bg-2));
       min-height:100vh;
       overflow-x:hidden;
-    }
-    a{color:inherit; text-decoration:none}
-    button,input,textarea{
-      font:inherit;
+      color:var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(180,35,24,.11), transparent 22%),
+        radial-gradient(circle at 92% 16%, rgba(20,16,15,.09), transparent 20%),
+        radial-gradient(circle at 50% 115%, rgba(180,35,24,.08), transparent 26%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
     }
 
+    a{color:inherit; text-decoration:none}
+    button,input,textarea{font:inherit}
+    button{border:none}
+    ::selection{background:rgba(180,35,24,.18)}
+
+    .ambient{
+      position:fixed;
+      inset:auto;
+      pointer-events:none;
+      z-index:0;
+      border-radius:50%;
+      filter:blur(12px);
+      opacity:.6;
+    }
+    .ambient.a{width:320px; height:320px; top:-120px; right:-100px; background:radial-gradient(circle, rgba(180,35,24,.18), transparent 66%);}
+    .ambient.b{width:380px; height:380px; bottom:-160px; left:-140px; background:radial-gradient(circle, rgba(36,27,24,.09), transparent 72%);}
+
     .wrap{
-      width:min(1180px, calc(100% - 32px));
+      width:min(var(--max), calc(100% - 28px));
       margin:0 auto;
+      position:relative;
+      z-index:1;
     }
 
     .topbar{
       position:sticky;
       top:0;
-      z-index:20;
-      backdrop-filter: blur(16px);
-      background: rgba(243,234,215,.72);
-      border-bottom:1px solid rgba(34,24,21,.08);
+      z-index:30;
+      backdrop-filter: blur(20px);
+      background: rgba(245, 234, 217, .72);
+      border-bottom:1px solid rgba(36,27,24,.08);
     }
     .topbar-inner{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
+      gap:18px;
       padding:14px 0;
     }
 
@@ -67,37 +88,36 @@
       gap:14px;
       min-width:0;
     }
-    .logo{
-      width:52px;
-      height:52px;
+    .brand-mark{
+      width:54px;
+      height:54px;
       border-radius:18px;
       display:grid;
       place-items:center;
-      background:
-        linear-gradient(145deg, #2a201d, #0f0c0b);
-      color:#f5e6cf;
-      box-shadow: var(--shadow-2);
+      color:#f7ead7;
+      background: linear-gradient(145deg, #2a1f1c, #0f0b0a);
+      box-shadow: var(--shadow-soft);
       position:relative;
       overflow:hidden;
       flex:0 0 auto;
     }
-    .logo::after{
+    .brand-mark::after{
       content:"";
       position:absolute;
-      inset:-40% -25%;
-      background: linear-gradient(45deg, transparent 40%, rgba(180,35,24,.45), transparent 60%);
+      inset:-40% -20%;
+      background: linear-gradient(45deg, transparent 42%, rgba(180,35,24,.48), transparent 58%);
       transform: rotate(18deg);
     }
-    .logo span{
+    .brand-mark span{
       position:relative;
       z-index:1;
       font-size:22px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:.5px;
     }
     .brand h1{
       margin:0;
-      font-size:1.2rem;
+      font-size:1.06rem;
       line-height:1.15;
       letter-spacing:.2px;
     }
@@ -105,40 +125,45 @@
       margin:4px 0 0;
       color:var(--muted);
       font-size:.92rem;
+      line-height:1.4;
     }
 
     .pill-row{
       display:flex;
+      gap:10px;
       flex-wrap:wrap;
       justify-content:flex-end;
-      gap:10px;
     }
     .pill{
-      padding:10px 14px;
-      border:1px solid rgba(34,24,21,.12);
-      background: rgba(255,248,235,.66);
-      border-radius:999px;
-      color:var(--text);
-      box-shadow: 0 6px 18px rgba(57, 33, 25, .06);
-      transition:.2s ease;
       display:inline-flex;
       align-items:center;
       gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(36,27,24,.10);
+      background: rgba(255, 251, 245, .68);
+      color:var(--text);
+      box-shadow: 0 8px 18px rgba(58,36,26,.05);
       cursor:pointer;
+      transition:.22s ease;
     }
-    .pill:hover{transform:translateY(-1px); border-color: rgba(180,35,24,.25)}
-    .pill strong{color:var(--red)}
+    .pill:hover{
+      transform: translateY(-1px);
+      border-color: rgba(180,35,24,.22);
+      box-shadow: 0 12px 22px rgba(58,36,26,.08);
+    }
+    .pill strong{color:var(--accent)}
 
     .hero{
-      padding:34px 0 18px;
+      padding:28px 0 18px;
     }
     .hero-card{
       position:relative;
       overflow:hidden;
-      border:1px solid rgba(34,24,21,.10);
-      border-radius: 32px;
+      border-radius: 36px;
+      border:1px solid rgba(36,27,24,.10);
       background:
-        linear-gradient(135deg, rgba(255,255,255,.56), rgba(255,248,235,.78));
+        linear-gradient(135deg, rgba(255,255,255,.62), rgba(255,249,239,.82));
       box-shadow: var(--shadow);
       padding: 28px;
     }
@@ -146,60 +171,73 @@
     .hero-card::after{
       content:"";
       position:absolute;
-      border-radius:999px;
+      border-radius:50%;
       pointer-events:none;
     }
     .hero-card::before{
-      width:220px;
-      height:220px;
-      right:-70px;
-      top:-90px;
-      background: radial-gradient(circle, rgba(180,35,24,.20), transparent 70%);
-    }
-    .hero-card::after{
       width:260px;
       height:260px;
-      left:-120px;
-      bottom:-150px;
-      background: radial-gradient(circle, rgba(23,18,17,.08), transparent 68%);
+      right:-90px;
+      top:-110px;
+      background: radial-gradient(circle, rgba(180,35,24,.18), transparent 70%);
+    }
+    .hero-card::after{
+      width:300px;
+      height:300px;
+      left:-130px;
+      bottom:-170px;
+      background: radial-gradient(circle, rgba(36,27,24,.08), transparent 72%);
     }
 
     .hero-grid{
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:22px;
-      align-items:stretch;
       position:relative;
       z-index:1;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:22px;
+      align-items:stretch;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(180,35,24,.08);
+      color:var(--accent-2);
+      border:1px solid rgba(180,35,24,.10);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.18px;
+      margin-bottom:14px;
     }
 
     .hero h2{
-      margin:0 0 10px;
-      font-size: clamp(2rem, 4vw, 3.7rem);
+      margin:0 0 12px;
+      font-size: clamp(2rem, 4.3vw, 4rem);
       line-height:1.02;
-      letter-spacing:-.03em;
+      letter-spacing:-.04em;
     }
-    .hero h2 .accent{
-      color:var(--red);
-    }
+    .hero h2 .accent{color:var(--accent)}
     .hero p{
       margin:0;
+      max-width:64ch;
       color:var(--muted);
       font-size:1.02rem;
-      line-height:1.7;
-      max-width: 62ch;
+      line-height:1.8;
     }
 
     .hero-actions{
       display:flex;
-      flex-wrap:wrap;
       gap:12px;
-      margin-top:20px;
+      flex-wrap:wrap;
+      margin-top:22px;
     }
     .btn{
       border:none;
-      padding:13px 18px;
       border-radius: 16px;
+      padding:13px 18px;
       cursor:pointer;
       transition:.2s ease;
       display:inline-flex;
@@ -207,71 +245,79 @@
       gap:10px;
       font-weight:700;
       letter-spacing:.1px;
-      box-shadow: var(--shadow-2);
+      box-shadow: var(--shadow-soft);
       user-select:none;
     }
-    .btn:hover{transform:translateY(-1px)}
+    .btn:hover{transform: translateY(-1px)}
     .btn.primary{
-      background: linear-gradient(135deg, var(--red), var(--red-2));
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color:#fff;
     }
     .btn.dark{
-      background: linear-gradient(135deg, #231b19, #0f0c0b);
+      background: linear-gradient(135deg, #241b18, #130f0e);
       color:#fff;
     }
     .btn.soft{
-      background: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.74);
       color:var(--text);
-      border:1px solid rgba(34,24,21,.08);
+      border:1px solid rgba(36,27,24,.08);
     }
 
-    .stat-box{
+    .stats{
       display:grid;
-      grid-template-columns:1fr;
       gap:12px;
       align-content:stretch;
     }
-    .mini{
-      border-radius: 24px;
-      background: rgba(23,18,17,.95);
-      color:#f7ead3;
+    .stat{
+      border-radius: 26px;
       padding:18px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-soft);
+      overflow:hidden;
+      position:relative;
+      min-height: 146px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      min-height: 140px;
-      position:relative;
-      overflow:hidden;
+      border:1px solid rgba(36,27,24,.08);
+      background: var(--paper-strong);
     }
-    .mini::after{
+    .stat::after{
       content:"";
       position:absolute;
-      inset:auto -40px -40px auto;
-      width:140px;
-      height:140px;
+      right:-40px;
+      bottom:-40px;
+      width:150px;
+      height:150px;
       border-radius:50%;
-      background: radial-gradient(circle, rgba(180,35,24,.45), transparent 68%);
+      background: radial-gradient(circle, rgba(180,35,24,.14), transparent 68%);
     }
-    .mini .label{
-      font-size:.9rem;
-      color:rgba(247,234,211,.75);
+    .stat.dark{
+      color:#f8ead6;
+      background: linear-gradient(145deg, #201714, #0f0b0a);
+      border-color: rgba(255,255,255,.05);
     }
-    .mini .num{
+    .stat.dark::after{
+      background: radial-gradient(circle, rgba(180,35,24,.36), transparent 68%);
+    }
+    .stat .label{
+      font-size:.88rem;
+      color:inherit;
+      opacity:.72;
+    }
+    .stat .num{
       font-size:2rem;
       font-weight:900;
       margin-top:4px;
+      letter-spacing:-.03em;
     }
-    .mini .small{
+    .stat .small{
       font-size:.94rem;
-      color:rgba(247,234,211,.85);
-      line-height:1.55;
-      max-width: 28ch;
+      line-height:1.6;
+      opacity:.88;
+      max-width:30ch;
     }
 
-    section{
-      padding: 18px 0 0;
-    }
+    section{padding: 18px 0 0}
 
     .section-head{
       display:flex;
@@ -282,18 +328,19 @@
     }
     .section-head h3{
       margin:0;
-      font-size:1.25rem;
+      font-size:1.2rem;
       letter-spacing:.1px;
     }
     .section-head p{
       margin:0;
       color:var(--muted);
       font-size:.95rem;
+      line-height:1.5;
     }
 
-    .tools{
+    .toolbar{
       display:grid;
-      grid-template-columns: 1.2fr .55fr auto;
+      grid-template-columns: 1.25fr .9fr auto;
       gap:12px;
       margin-bottom:16px;
     }
@@ -301,12 +348,12 @@
       display:flex;
       align-items:center;
       gap:10px;
-      background: rgba(255,255,255,.64);
-      border:1px solid rgba(34,24,21,.10);
+      background: rgba(255,255,255,.68);
+      border:1px solid rgba(36,27,24,.10);
       border-radius: 18px;
       padding: 0 14px;
-      box-shadow: 0 8px 20px rgba(57, 33, 25, .05);
-      min-height:52px;
+      box-shadow: 0 8px 20px rgba(58,36,26,.05);
+      min-height:54px;
     }
     .field input, .field textarea{
       border:none;
@@ -317,12 +364,13 @@
       font-size:.98rem;
       resize:none;
     }
-    .field input::placeholder, .field textarea::placeholder{color:#8a766f}
+    .field textarea{padding-top:12px;padding-bottom:12px}
+    .field input::placeholder, .field textarea::placeholder{color:#8b786f}
     .field .ico{
       width:22px;
       display:grid;
       place-items:center;
-      color:var(--red);
+      color:var(--accent);
       font-weight:900;
       flex:0 0 auto;
     }
@@ -334,53 +382,71 @@
     }
     .card{
       position:relative;
-      background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,248,235,.76));
-      border:1px solid rgba(34,24,21,.10);
-      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,249,240,.88));
+      border:1px solid rgba(36,27,24,.10);
+      border-radius: 26px;
       padding: 18px;
-      box-shadow: var(--shadow-2);
+      box-shadow: var(--shadow-soft);
       overflow:hidden;
       transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
     }
     .card:hover{
-      transform: translateY(-3px);
-      border-color: rgba(180,35,24,.18);
-      box-shadow: 0 16px 28px rgba(57, 33, 25, .12);
+      transform: translateY(-4px);
+      border-color: rgba(180,35,24,.20);
+      box-shadow: 0 20px 36px rgba(58,36,26,.12);
     }
-    .card .tag{
+    .card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .tag{
       display:inline-flex;
       align-items:center;
       gap:8px;
       padding:7px 10px;
       border-radius:999px;
       background: rgba(180,35,24,.08);
-      color:var(--red-2);
+      color:var(--accent-2);
       font-size:.82rem;
       font-weight:700;
-      margin-bottom:12px;
+    }
+    .badge{
+      width:36px;
+      height:36px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background: rgba(36,27,24,.06);
+      color:var(--accent-2);
+      font-weight:800;
+      flex:0 0 auto;
     }
     .card h4{
       margin:0 0 8px;
-      font-size:1.1rem;
+      font-size:1.08rem;
+      line-height:1.35;
     }
     .card p{
       margin:0 0 16px;
       color:var(--muted);
-      line-height:1.6;
-      min-height: 48px;
+      line-height:1.68;
+      min-height:48px;
     }
-    .card .url{
+    .url{
       display:block;
       word-break:break-word;
       font-size:.9rem;
-      color:#5e4b44;
-      background: rgba(34,24,21,.04);
-      border-radius: 14px;
+      color:#5d4a43;
+      background: rgba(36,27,24,.04);
+      border-radius: 16px;
       padding:10px 12px;
       margin-bottom:14px;
-      border:1px dashed rgba(34,24,21,.10);
+      border:1px dashed rgba(36,27,24,.12);
     }
-    .card .actions{
+    .actions{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
@@ -395,27 +461,37 @@
       text-align:center;
     }
     .link-btn{
-      background: linear-gradient(135deg, var(--black), #352724);
+      background: linear-gradient(135deg, #1f1715, #0f0c0b);
       color:#fff;
       flex:1;
       min-width: 110px;
     }
-    .link-btn:hover{opacity:.96; transform:translateY(-1px)}
+    .link-btn:hover{opacity:.96; transform: translateY(-1px)}
     .edit-btn{
       background: rgba(180,35,24,.10);
-      color: var(--red-2);
+      color: var(--accent-2);
       border:1px solid rgba(180,35,24,.14);
-      min-width: 98px;
+      min-width: 96px;
     }
-    .edit-btn:hover{background: rgba(180,35,24,.14)}
+    .edit-btn:hover{background: rgba(180,35,24,.16)}
+
+    .empty{
+      padding: 30px 20px;
+      text-align:center;
+      border:1px dashed rgba(36,27,24,.18);
+      border-radius: 26px;
+      background: rgba(255,255,255,.50);
+      color:var(--muted);
+      box-shadow: var(--shadow-soft);
+    }
 
     .manage{
       margin-top:16px;
-      border-radius: 28px;
-      background: rgba(23,18,17,.95);
-      color:#f7ead3;
-      overflow:hidden;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,249,240,.92));
+      border:1px solid rgba(36,27,24,.10);
       box-shadow: var(--shadow);
+      overflow:hidden;
     }
     .manage-head{
       padding:18px 20px;
@@ -424,68 +500,63 @@
       justify-content:space-between;
       gap:12px;
       align-items:center;
-      border-bottom:1px solid rgba(247,234,211,.09);
+      border-bottom:1px solid rgba(36,27,24,.08);
+      background: linear-gradient(135deg, rgba(180,35,24,.06), rgba(255,255,255,.1));
     }
     .manage-head h3{
       margin:0;
-      font-size:1.08rem;
+      font-size:1.06rem;
     }
     .manage-head p{
       margin:4px 0 0;
-      color:rgba(247,234,211,.74);
+      color:var(--muted);
       font-size:.92rem;
+      line-height:1.5;
     }
     .manage-body{
       padding:20px;
       display:grid;
-      grid-template-columns: 1fr 1fr 1.1fr auto;
+      grid-template-columns: 1fr 1fr 1.15fr auto;
       gap:12px;
     }
     .manage .field{
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:none;
-      color:#fff;
+      background: rgba(255,255,255,.78);
     }
-    .manage .field input, .manage .field textarea{
-      color:#fff;
-    }
-    .manage .field input::placeholder, .manage .field textarea::placeholder{color:rgba(247,234,211,.5)}
-    .manage .btn.primary{
-      min-height:52px;
-      box-shadow:none;
-    }
+    .manage .field textarea{min-height:54px}
+    .manage .btn.primary,
     .manage .btn.soft{
-      min-height:52px;
+      min-height:54px;
       box-shadow:none;
+      align-self:stretch;
     }
 
     .footer{
-      margin-top:24px;
-      padding: 22px 0 34px;
+      padding: 18px 0 34px;
+      margin-top:22px;
     }
     .footer-card{
-      background: linear-gradient(180deg, rgba(23,18,17,.96), rgba(34,24,21,.98));
-      color:#f7ead3;
-      border-radius: 28px;
-      padding: 22px;
+      background: linear-gradient(180deg, rgba(24,18,16,.97), rgba(32,23,20,.99));
+      color:#f8ead6;
+      border-radius: 30px;
+      padding: 24px;
       box-shadow: var(--shadow);
       border:1px solid rgba(255,255,255,.06);
     }
     .footer-grid{
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns: 1.05fr .95fr;
       gap:18px;
       align-items:start;
     }
     .footer h4{
       margin:0 0 10px;
       font-size:1.08rem;
+      letter-spacing:.1px;
     }
     .footer p{
       margin:0;
-      color:rgba(247,234,211,.82);
-      line-height:1.7;
+      color:rgba(248,234,214,.82);
+      line-height:1.75;
     }
     .contact-list{
       display:grid;
@@ -493,17 +564,18 @@
     }
     .contact-item{
       background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.07);
       border-radius: 18px;
       padding: 12px 14px;
     }
     .contact-item b{
       display:block;
       margin-bottom:5px;
-      color:#fff1dd;
+      color:#fff2df;
+      font-size:.95rem;
     }
-    .contact-item a{
-      color:#f2c6ba;
+    .contact-item a, .contact-item span{
+      color:#f0c3b9;
       word-break:break-word;
     }
     .footer-bottom{
@@ -514,42 +586,34 @@
       gap:8px;
       flex-wrap:wrap;
       justify-content:space-between;
-      color:rgba(247,234,211,.7);
+      color:rgba(248,234,214,.68);
       font-size:.92rem;
-    }
-
-    .empty{
-      padding: 26px;
-      text-align:center;
-      border:1px dashed rgba(34,24,21,.18);
-      border-radius: 24px;
-      background: rgba(255,255,255,.45);
-      color:var(--muted);
     }
 
     .modal{
       position:fixed;
       inset:0;
-      background: rgba(17,12,11,.68);
+      background: rgba(18,13,12,.68);
       display:none;
       align-items:center;
       justify-content:center;
       z-index:100;
-      padding: 18px;
+      padding:18px;
+      backdrop-filter: blur(8px);
     }
     .modal.show{display:flex}
     .modal-card{
-      width:min(560px, 100%);
-      background: linear-gradient(180deg, rgba(255,248,235,.98), rgba(243,234,215,.98));
+      width:min(580px, 100%);
+      background: linear-gradient(180deg, rgba(255,252,247,.98), rgba(246,236,221,.98));
       border-radius: 28px;
-      box-shadow: 0 30px 70px rgba(0,0,0,.35);
-      border:1px solid rgba(34,24,21,.12);
+      box-shadow: 0 30px 70px rgba(0,0,0,.34);
+      border:1px solid rgba(36,27,24,.12);
       overflow:hidden;
     }
     .modal-head{
       padding:18px 20px 14px;
-      background: linear-gradient(135deg, rgba(180,35,24,.12), rgba(23,18,17,.04));
-      border-bottom:1px solid rgba(34,24,21,.08);
+      background: linear-gradient(135deg, rgba(180,35,24,.12), rgba(36,27,24,.03));
+      border-bottom:1px solid rgba(36,27,24,.08);
     }
     .modal-head h3{margin:0 0 5px}
     .modal-head p{margin:0;color:var(--muted);line-height:1.6}
@@ -562,7 +626,7 @@
       display:flex;
       gap:12px;
       justify-content:flex-end;
-      padding: 0 20px 20px;
+      padding:0 20px 20px;
       flex-wrap:wrap;
     }
     .hint{
@@ -573,51 +637,53 @@
     .error{
       color:#b42318;
       font-weight:700;
-      min-height: 22px;
+      min-height:22px;
     }
     .success{
       color:#0b7a34;
       font-weight:700;
-      min-height: 22px;
+      min-height:22px;
     }
-
     .hidden{display:none !important;}
 
-    @media (max-width: 980px){
+    @media (max-width: 1020px){
       .hero-grid,
+      .toolbar,
       .footer-grid,
-      .tools,
       .manage-body{
         grid-template-columns:1fr;
       }
       .grid{grid-template-columns: repeat(2, minmax(0,1fr));}
       .pill-row{justify-content:flex-start}
     }
-    @media (max-width: 640px){
-      .wrap{width:min(100% - 20px, 1180px);}
+    @media (max-width: 680px){
+      .wrap{width:min(100% - 18px, var(--max));}
       .topbar-inner{flex-direction:column; align-items:flex-start}
       .hero-card{padding:20px}
       .grid{grid-template-columns:1fr}
-      .brand h1{font-size:1.05rem}
-      .logo{width:46px;height:46px;border-radius:16px}
-      .logo span{font-size:19px}
+      .brand h1{font-size:1rem}
+      .brand-mark{width:46px;height:46px;border-radius:16px}
+      .brand-mark span{font-size:19px}
       .footer-bottom{flex-direction:column}
     }
   </style>
 </head>
 <body>
+  <div class="ambient a"></div>
+  <div class="ambient b"></div>
+
   <header class="topbar">
     <div class="wrap topbar-inner">
       <div class="brand">
-        <div class="logo" aria-hidden="true"><span>K</span></div>
+        <div class="brand-mark" aria-hidden="true"><span>K</span></div>
         <div>
           <h1>Kho Tàng Của Koi</h1>
-          <p>Nơi gom lại các website và trang web của riêng Koi</p>
+          <p>Thanh lịch, gọn gàng và dễ quản lý các website riêng</p>
         </div>
       </div>
       <div class="pill-row">
-        <button class="pill" onclick="scrollToSection('sites')">🌐 <strong>Trang web</strong></button>
-        <button class="pill" onclick="scrollToSection('manageArea')">✦ <strong>Chỉnh sửa</strong></button>
+        <button class="pill" onclick="scrollToSection('sites')">✦ <strong>Website</strong></button>
+        <button class="pill" onclick="scrollToSection('manageArea')">◌ <strong>Quản lý</strong></button>
         <button class="pill" onclick="scrollToSection('contact')">♡ <strong>Liên hệ</strong></button>
       </div>
     </div>
@@ -628,30 +694,32 @@
       <div class="hero-card">
         <div class="hero-grid">
           <div>
+            <div class="eyebrow">Elegant Home · Private Link Hub</div>
             <h2>Chào mừng đến với <span class="accent">Kho Tàng Của Koi</span></h2>
             <p>
-              Đây là trang chủ tập hợp các website của Koi được xếp gọn gàng, dễ truy cập, dễ thêm mới và dễ quản lý.
-              Chỉ cần mở khóa chỉnh sửa, bạn có thể thêm hoặc xóa liên kết theo ý muốn.
+              Một trang chủ được thiết kế theo hướng thanh lịch, sáng sủa và tinh tế để lưu trữ toàn bộ website của bạn.
+              Giao diện chú trọng khoảng thở, độ tương phản vừa phải và cảm giác cao cấp.
             </p>
             <div class="hero-actions">
               <button class="btn primary" onclick="scrollToSection('sites')">Mở danh sách website</button>
               <button class="btn dark" id="unlockBtn" onclick="openPasswordModal()">Mở khóa chỉnh sửa</button>
             </div>
           </div>
-          <div class="stat-box">
-            <div class="mini">
+
+          <div class="stats">
+            <div class="stat">
               <div>
                 <div class="label">Tổng số website</div>
                 <div class="num" id="siteCount">0</div>
               </div>
-              <div class="small">Danh sách được lưu trên trình duyệt để bạn có thể tự thêm web mới bất cứ lúc nào.</div>
+              <div class="small">Danh sách được lưu trong trình duyệt, thuận tiện thêm mới mọi lúc.</div>
             </div>
-            <div class="mini" style="background:linear-gradient(145deg,#b42318,#221815);">
+            <div class="stat dark">
               <div>
                 <div class="label">Trạng thái chỉnh sửa</div>
                 <div class="num" id="editState">Đã khóa</div>
               </div>
-              <div class="small">Nhập mật khẩu để bật chế độ thêm hoặc xóa website.</div>
+              <div class="small">Chỉ cần nhập mật khẩu để bật chế độ thêm, sửa và xóa liên kết.</div>
             </div>
           </div>
         </div>
@@ -662,18 +730,18 @@
       <div class="section-head">
         <div>
           <h3>Danh sách website</h3>
-          <p>Nhấp để mở trang web bạn muốn truy cập.</p>
+          <p>Nhấp để mở trang bạn muốn truy cập.</p>
         </div>
       </div>
 
-      <div class="tools">
+      <div class="toolbar">
         <div class="field">
           <div class="ico">⌕</div>
           <input id="searchInput" type="text" placeholder="Tìm website theo tên hoặc đường dẫn..." />
         </div>
         <div class="field">
-          <div class="ico">⟲</div>
-          <input id="filterInput" type="text" placeholder="Lọc nhanh..." />
+          <div class="ico">◎</div>
+          <input id="filterInput" type="text" placeholder="Lọc nhanh theo từ khóa..." />
         </div>
         <button class="btn soft" onclick="clearFilters()">Xóa bộ lọc</button>
       </div>
@@ -686,7 +754,7 @@
       <div class="section-head">
         <div>
           <h3>Quản lý liên kết</h3>
-          <p>Phần này chỉ mở khi nhập đúng mật khẩu.</p>
+          <p>Chế độ này chỉ mở khi nhập đúng mật khẩu.</p>
         </div>
       </div>
 
@@ -694,7 +762,7 @@
         <div class="manage-head">
           <div>
             <h3>Thêm website mới</h3>
-            <p>Ví dụ: tên website, đường dẫn và ghi chú.</p>
+            <p>Nhập tên, đường dẫn và ghi chú ngắn gọn.</p>
           </div>
           <button class="btn soft" id="lockToggleBtn" onclick="toggleLockPanel()">Mở bảng mật khẩu</button>
         </div>
@@ -707,8 +775,8 @@
             <div class="ico">⛓</div>
             <input id="newUrl" type="url" placeholder="Dán URL đầy đủ" disabled />
           </div>
-          <div class="field" style="padding-top:12px;padding-bottom:12px;align-items:flex-start;">
-            <div class="ico">📝</div>
+          <div class="field" style="align-items:flex-start;">
+            <div class="ico" style="padding-top:12px;">📝</div>
             <textarea id="newDesc" rows="1" placeholder="Ghi chú ngắn" disabled></textarea>
           </div>
           <button class="btn primary" id="addBtn" onclick="addSite()" disabled>Thêm</button>
@@ -722,8 +790,7 @@
           <div>
             <h4>Liên hệ</h4>
             <p>
-              Đây là phần liên hệ của Koi.
-              Bạn có thể liên hệ với Koi qua các nền tảng dưới đây để được hỗ trợ hoặc góp ý.
+              Đây là phần liên hệ của Koi. Bạn có thể kết nối qua các nền tảng dưới đây để trao đổi, góp ý hoặc cập nhật website mới.
             </p>
           </div>
           <div class="contact-list">
@@ -747,7 +814,7 @@
         </div>
         <div class="footer-bottom">
           <div>© <span id="year"></span> Kho Tàng Của Koi</div>
-          <div>Thiết kế bởi KoiFish</div>
+          <div>Thiết kế thanh lịch bởi KoiFish</div>
         </div>
       </div>
     </section>
@@ -789,8 +856,8 @@
           <div class="ico">⛓</div>
           <input id="editUrlInput" type="url" placeholder="URL đầy đủ" />
         </div>
-        <div class="field" style="padding-top:12px;padding-bottom:12px;align-items:flex-start;">
-          <div class="ico">📝</div>
+        <div class="field" style="align-items:flex-start;">
+          <div class="ico" style="padding-top:12px;">📝</div>
           <textarea id="editDescInput" rows="3" placeholder="Ghi chú"></textarea>
         </div>
         <div id="editMsg" class="error"></div>
@@ -867,7 +934,7 @@
     function normalizeUrl(url){
       let trimmed = String(url || "").trim();
       if(!trimmed) return "";
-      if(!/^https?:\/\//i.test(trimmed)) {
+      if(!/^https?:\/\//i.test(trimmed)){
         if(trimmed.startsWith("www.")) trimmed = "https://" + trimmed;
         else trimmed = "https://" + trimmed;
       }
@@ -912,8 +979,12 @@
         const index = sites.indexOf(site);
         const card = document.createElement("article");
         card.className = "card";
+        const initials = (site.title || "K").trim().slice(0,1).toUpperCase();
         card.innerHTML = `
-          <div class="tag">★ Website ${index + 1}</div>
+          <div class="card-top">
+            <div class="tag">★ Website ${index + 1}</div>
+            <div class="badge">${escapeHtml(initials)}</div>
+          </div>
           <h4>${escapeHtml(site.title)}</h4>
           <p>${escapeHtml(site.desc || "Liên kết nhanh tới trang web của bạn.")}</p>
           <span class="url">${escapeHtml(site.url)}</span>
@@ -1067,8 +1138,8 @@
       el.style.left = "50%";
       el.style.bottom = "24px";
       el.style.transform = "translateX(-50%)";
-      el.style.background = "rgba(23,18,17,.96)";
-      el.style.color = "#f7ead3";
+      el.style.background = "rgba(24,18,16,.96)";
+      el.style.color = "#f8ead6";
       el.style.padding = "12px 16px";
       el.style.borderRadius = "999px";
       el.style.boxShadow = "0 18px 40px rgba(0,0,0,.28)";
