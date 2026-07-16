@@ -762,7 +762,7 @@ transform:translateY(-18px);
     <div class="section-shell">
       <div class="section-head">
         <span class="eyebrow">Khu vực riêng</span>
-        <h2 class="section-title">Quản lý hồ cá</h2>
+        <h2 class="section-title">Quản lý Hub</h2>
       </div>
 
       <div class="lock-card" id="lock-card">
