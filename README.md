@@ -883,8 +883,13 @@ function loadWebsites() {
             title:"KOI LABORATORY",
             url:"https://2410phongnguyen-eng.github.io/----/",
             desc:"Nơi bạn có thể thực hành các thí nghiệm hóa học và mở khóa chất mới.Đồng thời,có thể thực hiện nhiều phương trình hóa học vô cơ và hữu cơ khác nhau."
-        }
-
+        },
+ {
+            id:1,
+            title:"KOI MUSIC",
+            url:"https://2410phongnguyen-eng.github.io/KOIMUSIC/",
+            desc:"Nơi bạn có thể kiến tạo một không gian âm nhạc không giới hạn của riêng mình. Bạn có thể nghe nhạc, tạo nhạc, tạo danh sách phát và chia sẻ với bạn bè."
+        },
     ];
 }
 
