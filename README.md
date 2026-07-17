@@ -853,97 +853,131 @@ transform:translateY(-18px);
 <footer>© <span id="year"></span> KOIFISH — NISHIKI HUB</footer>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import {
-    getFirestore,
-    collection,
-    onSnapshot,
-    addDoc,
-    doc,
-    updateDoc,
-    deleteDoc
-  } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+    getDatabase,
+    ref,
+    onValue,
+    push,
+    set,
+    update,
+    remove,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-  // 1) Dán cấu hình Firebase của bạn vào đây
-  // Firebase Console -> Project settings -> Your apps -> Web app -> firebaseConfig
+  // 1) DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
   const firebaseConfig = {
-    apiKey: "PASTE_HERE",
-    authDomain: "PASTE_HERE",
-    projectId: "PASTE_HERE",
-    storageBucket: "PASTE_HERE",
-    messagingSenderId: "PASTE_HERE",
-    appId: "PASTE_HERE"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const websitesRef = collection(db, 'koifish_websites');
+  const db = getDatabase(app);
+  const sitesRef = ref(db, "websites");
 
-  const PASSWORD = '24102011';
-
+  const PASSWORD = "24102011"; // chỉ là khóa giao diện, không phải bảo mật thật
   let unlocked = false;
-  let websites = [];
+  let websites = []; // sẽ luôn lấy từ Firebase
 
+  // ====== ELEMENTS ======
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+
+  const siteGrid = $("#site-grid");
+  const manageList = $("#manage-list");
+  const statCount = $("#stat-count");
+  const yearEl = $("#year");
+
+  const pwInput = $("#pw-input");
+  const unlockBtn = $("#unlock-btn");
+  const lockCard = $("#lock-card");
+  const lockError = $("#lock-error");
+  const managePanel = $("#manage-panel");
+
+  const newTitle = $("#new-title");
+  const newUrl = $("#new-url");
+  const newDesc = $("#new-desc");
+
+  // ====== HELPERS ======
   function escapeHtml(str) {
-    return String(str ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
-  function normalizeDoc(d) {
-    const data = d.data() || {};
-    return {
-      id: d.id,
-      title: data.title || 'Không tên',
-      url: data.url || '#',
-      desc: data.desc || 'Chưa có mô tả.',
-      createdAt: typeof data.createdAt === 'number' ? data.createdAt : 0
-    };
+  function normalizeList(data) {
+    if (!data || typeof data !== "object") return [];
+    return Object.entries(data)
+      .map(([id, w]) => ({
+        id,
+        title: w?.title ?? "",
+        url: w?.url ?? "",
+        desc: w?.desc ?? "",
+        createdAt: w?.createdAt ?? 0,
+        updatedAt: w?.updatedAt ?? 0
+      }))
+      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   }
 
   function updateHomeStats() {
-    document.getElementById('stat-count').textContent = String(websites.length).padStart(2, '0');
+    statCount.textContent = String(websites.length).padStart(2, "0");
   }
 
   function renderSiteGrid() {
-    const grid = document.getElementById('site-grid');
+    if (!siteGrid) return;
 
     if (!websites.length) {
-      grid.innerHTML = '<div class="empty-note">Hub hiện chưa có website nào. Vào mục Quản lý để thêm website đầu tiên.</div>';
+      siteGrid.innerHTML = `
+        <div class="empty-note">
+          Hub hiện chưa có website nào. Vào mục Quản lý để thêm website đầu tiên.
+        </div>
+      `;
       return;
     }
 
-    grid.innerHTML = websites.map((w, i) => {
-      const safeUrl = String(w.url || '#').trim();
-      return `
-        <div class="site-card">
-          <span class="tag">#${String(i + 1).padStart(2, '0')}</span>
-          <h3>${escapeHtml(w.title)}</h3>
-          <p>${escapeHtml(w.desc)}</p>
-          <a class="visit" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">Truy cập website →</a>
-        </div>
-      `;
-    }).join('');
+    siteGrid.innerHTML = websites
+      .map((w, i) => {
+        const safeUrl = String(w.url || "#").trim();
+        return `
+          <div class="site-card">
+            <span class="tag">#${String(i + 1).padStart(2, "0")}</span>
+            <h3>${escapeHtml(w.title || "Không tên")}</h3>
+            <p>${escapeHtml(w.desc || "Chưa có mô tả.")}</p>
+            <a class="visit" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">
+              Truy cập website →
+            </a>
+          </div>
+        `;
+      })
+      .join("");
   }
 
   function renderManageList() {
-    const list = document.getElementById('manage-list');
-    list.innerHTML = '';
+    if (!manageList) return;
+
+    manageList.innerHTML = "";
 
     if (!websites.length) {
-      list.innerHTML = '<div class="empty-note">Chưa có website nào trong hub.</div>';
+      manageList.innerHTML = `
+        <div class="empty-note">Chưa có website nào trong hub.</div>
+      `;
       return;
     }
 
     websites.forEach((w) => {
-      const div = document.createElement('div');
-      div.className = 'manage-item';
-      div.dataset.id = w.id;
+      const item = document.createElement("div");
+      item.className = "manage-item";
+      item.dataset.id = w.id;
 
-      div.innerHTML = `
+      item.innerHTML = `
         <div class="form-grid">
           <div>
             <label>Tên website</label>
@@ -969,150 +1003,138 @@ transform:translateY(-18px);
         <div class="save-msg">Đã lưu.</div>
       `;
 
-      list.appendChild(div);
+      manageList.appendChild(item);
     });
 
-    list.querySelectorAll('.act-save').forEach(btn => {
+    manageList.querySelectorAll(".act-save").forEach((btn) => {
       btn.onclick = saveWebsite;
     });
 
-    list.querySelectorAll('.act-delete').forEach(btn => {
+    manageList.querySelectorAll(".act-delete").forEach((btn) => {
       btn.onclick = deleteWebsite;
     });
   }
 
-  async function saveWebsite(e) {
-    const item = e.target.closest('.manage-item');
-    const id = item.dataset.id;
+  function switchView(view) {
+    $$(".view").forEach((v) => v.classList.remove("active"));
+    const target = document.getElementById("view-" + view);
+    if (target) target.classList.add("active");
 
-    const title = item.querySelector('.f-title').value.trim();
-    const url = item.querySelector('.f-url').value.trim();
-    const desc = item.querySelector('.f-desc').value.trim();
+    $$(".nav-link").forEach((btn) => {
+      btn.classList.toggle("active", btn.getAttribute("data-view") === view);
+    });
+
+    if (view === "websites") renderSiteGrid();
+    if (view === "home") updateHomeStats();
+    if (view === "manage" && unlocked) renderManageList();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function addWebsite() {
+    const title = newTitle.value.trim();
+    const url = newUrl.value.trim();
+    const desc = newDesc.value.trim();
 
     if (!title || !url) {
-      alert('Tên và URL không được để trống.');
+      alert("Vui lòng nhập tên và đường dẫn website.");
       return;
     }
 
-    await updateDoc(doc(db, 'koifish_websites', id), {
+    const node = push(sitesRef);
+    await set(node, {
       title,
       url,
-      desc: desc || 'Chưa có mô tả.',
-      updatedAt: Date.now()
+      desc: desc || "Chưa có mô tả.",
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
 
-    item.querySelector('.save-msg').classList.add('show');
-    setTimeout(() => {
-      item.querySelector('.save-msg').classList.remove('show');
-    }, 1200);
+    newTitle.value = "";
+    newUrl.value = "";
+    newDesc.value = "";
+  }
+
+  async function saveWebsite(e) {
+    const item = e.target.closest(".manage-item");
+    if (!item) return;
+
+    const id = item.dataset.id;
+    const title = item.querySelector(".f-title").value.trim();
+    const url = item.querySelector(".f-url").value.trim();
+    const desc = item.querySelector(".f-desc").value.trim();
+
+    await update(ref(db, `websites/${id}`), {
+      title,
+      url,
+      desc,
+      updatedAt: serverTimestamp()
+    });
+
+    const msg = item.querySelector(".save-msg");
+    msg.classList.add("show");
+    setTimeout(() => msg.classList.remove("show"), 1200);
   }
 
   async function deleteWebsite(e) {
-    const item = e.target.closest('.manage-item');
+    const item = e.target.closest(".manage-item");
+    if (!item) return;
+
     const id = item.dataset.id;
+    if (!confirm("Xóa website này?")) return;
 
-    if (!confirm('Xóa website này?')) return;
-
-    await deleteDoc(doc(db, 'koifish_websites', id));
+    await remove(ref(db, `websites/${id}`));
   }
 
-  function switchView(view) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    const target = document.getElementById('view-' + view);
-    if (target) target.classList.add('active');
-
-    document.querySelectorAll('.nav-link').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-view') === view);
-    });
-
-    if (view === 'websites') renderSiteGrid();
-    if (view === 'home') updateHomeStats();
-    if (view === 'manage' && unlocked) renderManageList();
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  async function deleteAllSites() {
+    if (!confirm("Xoá toàn bộ website trong hub?")) return;
+    await remove(sitesRef);
   }
-
-  document.querySelectorAll('[data-view]').forEach(el => {
-    el.addEventListener('click', () => switchView(el.getAttribute('data-view')));
-  });
-
-  const pwInput = document.getElementById('pw-input');
-  const unlockBtn = document.getElementById('unlock-btn');
-  const lockCard = document.getElementById('lock-card');
-  const lockError = document.getElementById('lock-error');
-  const managePanel = document.getElementById('manage-panel');
 
   function tryUnlock() {
     if (pwInput.value === PASSWORD) {
       unlocked = true;
-      lockCard.style.display = 'none';
-      managePanel.classList.add('show');
+      lockCard.style.display = "none";
+      managePanel.classList.add("show");
       renderManageList();
     } else {
-      lockError.classList.remove('show');
+      lockError.classList.remove("show");
       void lockError.offsetWidth;
-      lockError.classList.add('show');
+      lockError.classList.add("show");
     }
   }
 
-  unlockBtn.addEventListener('click', tryUnlock);
-  pwInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') tryUnlock();
-  });
-
-  document.getElementById('add-btn').addEventListener('click', async () => {
-    const title = document.getElementById('new-title').value.trim();
-    const url = document.getElementById('new-url').value.trim();
-    const desc = document.getElementById('new-desc').value.trim();
-
-    if (!title || !url) {
-      alert('Vui lòng nhập tên và đường dẫn website.');
-      return;
-    }
-
-    await addDoc(websitesRef, {
-      title,
-      url,
-      desc: desc || 'Chưa có mô tả.',
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    });
-
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-url').value = '';
-    document.getElementById('new-desc').value = '';
-  });
-
-  document.getElementById('clear-form-btn').addEventListener('click', () => {
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-url').value = '';
-    document.getElementById('new-desc').value = '';
-  });
-
-  document.getElementById('delete-all-btn').addEventListener('click', async () => {
-    if (!confirm('Xoá toàn bộ website trong hub?')) return;
-
-    const snapshot = [...websites];
-    for (const w of snapshot) {
-      await deleteDoc(doc(db, 'koifish_websites', w.id));
-    }
-  });
-
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  // Realtime sync: mọi thiết bị mở cùng dữ liệu này sẽ tự cập nhật khi có thay đổi
-  onSnapshot(websitesRef, (snap) => {
-    websites = snap.docs.map(normalizeDoc).sort((a, b) => a.createdAt - b.createdAt);
+  // ====== REALTIME LISTENER ======
+  onValue(sitesRef, (snapshot) => {
+    websites = normalizeList(snapshot.val());
     updateHomeStats();
     renderSiteGrid();
     if (unlocked) renderManageList();
-  }, (err) => {
-    console.error(err);
-    alert('Không thể đồng bộ dữ liệu. Hãy kiểm tra Firebase config và Firestore.');
   });
 
+  // ====== EVENTS ======
+  $$(".nav-link, .brand, .hero-actions [data-view]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const view = el.getAttribute("data-view");
+      if (view) switchView(view);
+    });
+  });
+
+  unlockBtn.addEventListener("click", tryUnlock);
+  pwInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") tryUnlock();
+  });
+
+  $("#add-btn").addEventListener("click", addWebsite);
+  $("#clear-form-btn").addEventListener("click", () => {
+    newTitle.value = "";
+    newUrl.value = "";
+    newDesc.value = "";
+  });
+  $("#delete-all-btn").addEventListener("click", deleteAllSites);
+
+  yearEl.textContent = new Date().getFullYear();
   updateHomeStats();
-  renderSiteGrid();
 </script>
 
 <script>
