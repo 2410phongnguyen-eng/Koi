@@ -874,14 +874,14 @@ function loadWebsites() {
         {
             id:1,
             title:"KOI DICTIONARY",
-            url:"https://2410phongnguyen-eng.github.io/-/",
+            url:"https://2410phongnguyen-eng.github.io/KOIDICTIONARY/",
             desc:"Bạn có thể tra cứu các từ vựng Anh,Trung,Nhật,Việt.Bạn có thể luyện tập nghe, nói về các từ vựng trong từ điển để nâng cao vốn từ vừng."
         },
 
         {
             id:2,
             title:"KOI LABORATORY",
-            url:"https://2410phongnguyen-eng.github.io/----/",
+            url:"https://2410phongnguyen-eng.github.io/KOILABORATORY/",
             desc:"Nơi bạn có thể thực hành các thí nghiệm hóa học và mở khóa chất mới.Đồng thời,có thể thực hiện nhiều phương trình hóa học vô cơ và hữu cơ khác nhau."
         },
  {
