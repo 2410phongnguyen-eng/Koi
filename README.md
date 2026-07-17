@@ -854,21 +854,14 @@ transform:translateY(-18px);
 
 <script>
 (() => {
-  const STORAGE_KEY = 'koifish_websites_v2_empty';
+
   const PASSWORD = '24102011';
 
   let unlocked = false;
   let websites = loadWebsites();
 
 function loadWebsites() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) return parsed;
-        }
-    } catch (_) {}
-
+   
     return [
 
         {
@@ -885,7 +878,7 @@ function loadWebsites() {
             desc:"Nơi bạn có thể thực hành các thí nghiệm hóa học và mở khóa chất mới.Đồng thời,có thể thực hiện nhiều phương trình hóa học vô cơ và hữu cơ khác nhau."
         },
  {
-            id:1,
+            id:3,
             title:"KOI MUSIC",
             url:"https://2410phongnguyen-eng.github.io/KOIMUSIC/",
             desc:"Nơi bạn có thể kiến tạo một không gian âm nhạc không giới hạn của riêng mình. Bạn có thể nghe nhạc, tạo nhạc, tạo danh sách phát và chia sẻ với bạn bè."
@@ -993,30 +986,10 @@ function renderManageList() {
         btn.onclick=deleteWebsite;
     });
 }
+localStorage.removeItem('koifish_websites_v2_empty');
+localStorage.clear();
 function saveWebsite(e){
 
-    const item=e.target.closest(".manage-item");
-    const id=Number(item.dataset.id);
-
-    const w=websites.find(x=>x.id===id);
-
-    if(!w) return;
-
-    w.title=item.querySelector(".f-title").value.trim();
-    w.url=item.querySelector(".f-url").value.trim();
-    w.desc=item.querySelector(".f-desc").value.trim();
-
-    saveWebsites();
-
-    renderSiteGrid();
-
-    updateHomeStats();
-
-    item.querySelector(".save-msg").classList.add("show");
-
-    setTimeout(()=>{
-        item.querySelector(".save-msg").classList.remove("show");
-    },1200);
 }
 
 function deleteWebsite(e){
