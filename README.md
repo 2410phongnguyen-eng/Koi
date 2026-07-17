@@ -852,30 +852,37 @@ transform:translateY(-18px);
 
 <footer>© <span id="year"></span> KOIFISH — NISHIKI HUB</footer>
 
-<script>
-(() => {
-  const STORAGE_KEY = 'koifish_websites_v2_empty';
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+  import {
+    getFirestore,
+    collection,
+    onSnapshot,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc
+  } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+  // 1) Dán cấu hình Firebase của bạn vào đây
+  // Firebase Console -> Project settings -> Your apps -> Web app -> firebaseConfig
+  const firebaseConfig = {
+    apiKey: "PASTE_HERE",
+    authDomain: "PASTE_HERE",
+    projectId: "PASTE_HERE",
+    storageBucket: "PASTE_HERE",
+    messagingSenderId: "PASTE_HERE",
+    appId: "PASTE_HERE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const websitesRef = collection(db, 'koifish_websites');
+
   const PASSWORD = '24102011';
 
   let unlocked = false;
-  let websites = loadWebsites();
-
-  function loadWebsites() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (_) {}
-    return []; // khởi đầu trống
-  }
-
-  function saveWebsites() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(websites));
-    } catch (_) {}
-  }
+  let websites = [];
 
   function escapeHtml(str) {
     return String(str ?? '')
@@ -886,8 +893,15 @@ transform:translateY(-18px);
       .replace(/'/g, '&#39;');
   }
 
-  function nextId() {
-    return websites.reduce((max, w) => Math.max(max, Number(w.id) || 0), 0) + 1;
+  function normalizeDoc(d) {
+    const data = d.data() || {};
+    return {
+      id: d.id,
+      title: data.title || 'Không tên',
+      url: data.url || '#',
+      desc: data.desc || 'Chưa có mô tả.',
+      createdAt: typeof data.createdAt === 'number' ? data.createdAt : 0
+    };
   }
 
   function updateHomeStats() {
@@ -907,114 +921,101 @@ transform:translateY(-18px);
       return `
         <div class="site-card">
           <span class="tag">#${String(i + 1).padStart(2, '0')}</span>
-          <h3>${escapeHtml(w.title || 'Không tên')}</h3>
-          <p>${escapeHtml(w.desc || 'Chưa có mô tả.')}</p>
+          <h3>${escapeHtml(w.title)}</h3>
+          <p>${escapeHtml(w.desc)}</p>
           <a class="visit" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">Truy cập website →</a>
         </div>
       `;
     }).join('');
   }
 
-function renderManageList() {
-    const list = document.getElementById("manage-list");
+  function renderManageList() {
+    const list = document.getElementById('manage-list');
+    list.innerHTML = '';
 
-    list.innerHTML = "";
-
-    if (websites.length === 0) {
-        list.innerHTML =
-            '<div class="empty-note">Chưa có website nào trong hub.</div>';
-        return;
+    if (!websites.length) {
+      list.innerHTML = '<div class="empty-note">Chưa có website nào trong hub.</div>';
+      return;
     }
 
     websites.forEach((w) => {
+      const div = document.createElement('div');
+      div.className = 'manage-item';
+      div.dataset.id = w.id;
 
-        const div = document.createElement("div");
-        div.className = "manage-item";
-        div.dataset.id = w.id;
-
-        div.innerHTML = `
+      div.innerHTML = `
         <div class="form-grid">
+          <div>
+            <label>Tên website</label>
+            <input class="f-title" value="${escapeHtml(w.title)}">
+          </div>
 
-            <div>
-                <label>Tên website</label>
-                <input class="f-title" value="${escapeHtml(w.title)}">
-            </div>
+          <div>
+            <label>URL</label>
+            <input class="f-url" value="${escapeHtml(w.url)}">
+          </div>
 
-            <div>
-                <label>URL</label>
-                <input class="f-url" value="${escapeHtml(w.url)}">
-            </div>
-
-            <div class="full">
-                <label>Mô tả</label>
-                <textarea class="f-desc">${escapeHtml(w.desc)}</textarea>
-            </div>
-
+          <div class="full">
+            <label>Mô tả</label>
+            <textarea class="f-desc">${escapeHtml(w.desc)}</textarea>
+          </div>
         </div>
 
         <div class="item-actions">
-            <button class="btn danger small act-delete">Xóa</button>
-            <button class="btn small act-save">Lưu</button>
+          <button class="btn danger small act-delete" type="button">Xóa</button>
+          <button class="btn small act-save" type="button">Lưu</button>
         </div>
 
         <div class="save-msg">Đã lưu.</div>
-        `;
+      `;
 
-        list.appendChild(div);
+      list.appendChild(div);
     });
 
-    list.querySelectorAll(".act-save").forEach(btn=>{
-        btn.onclick=saveWebsite;
+    list.querySelectorAll('.act-save').forEach(btn => {
+      btn.onclick = saveWebsite;
     });
 
-    list.querySelectorAll(".act-delete").forEach(btn=>{
-        btn.onclick=deleteWebsite;
+    list.querySelectorAll('.act-delete').forEach(btn => {
+      btn.onclick = deleteWebsite;
     });
-}
-function saveWebsite(e){
+  }
 
-    const item=e.target.closest(".manage-item");
-    const id=Number(item.dataset.id);
+  async function saveWebsite(e) {
+    const item = e.target.closest('.manage-item');
+    const id = item.dataset.id;
 
-    const w=websites.find(x=>x.id===id);
+    const title = item.querySelector('.f-title').value.trim();
+    const url = item.querySelector('.f-url').value.trim();
+    const desc = item.querySelector('.f-desc').value.trim();
 
-    if(!w) return;
+    if (!title || !url) {
+      alert('Tên và URL không được để trống.');
+      return;
+    }
 
-    w.title=item.querySelector(".f-title").value.trim();
-    w.url=item.querySelector(".f-url").value.trim();
-    w.desc=item.querySelector(".f-desc").value.trim();
+    await updateDoc(doc(db, 'koifish_websites', id), {
+      title,
+      url,
+      desc: desc || 'Chưa có mô tả.',
+      updatedAt: Date.now()
+    });
 
-    saveWebsites();
+    item.querySelector('.save-msg').classList.add('show');
+    setTimeout(() => {
+      item.querySelector('.save-msg').classList.remove('show');
+    }, 1200);
+  }
 
-    renderSiteGrid();
+  async function deleteWebsite(e) {
+    const item = e.target.closest('.manage-item');
+    const id = item.dataset.id;
 
-    updateHomeStats();
+    if (!confirm('Xóa website này?')) return;
 
-    item.querySelector(".save-msg").classList.add("show");
+    await deleteDoc(doc(db, 'koifish_websites', id));
+  }
 
-    setTimeout(()=>{
-        item.querySelector(".save-msg").classList.remove("show");
-    },1200);
-}
-
-function deleteWebsite(e){
-
-    const item=e.target.closest(".manage-item");
-
-    const id=Number(item.dataset.id);
-
-    if(!confirm("Xóa website này?")) return;
-
-    websites=websites.filter(x=>x.id!==id);
-
-    saveWebsites();
-
-    renderManageList();
-
-    renderSiteGrid();
-
-    updateHomeStats();
-}
   function switchView(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const target = document.getElementById('view-' + view);
@@ -1059,7 +1060,7 @@ function deleteWebsite(e){
     if (e.key === 'Enter') tryUnlock();
   });
 
-  document.getElementById('add-btn').addEventListener('click', () => {
+  document.getElementById('add-btn').addEventListener('click', async () => {
     const title = document.getElementById('new-title').value.trim();
     const url = document.getElementById('new-url').value.trim();
     const desc = document.getElementById('new-desc').value.trim();
@@ -1069,21 +1070,17 @@ function deleteWebsite(e){
       return;
     }
 
-   websites.push({
-    id: Date.now(),
-    title: title,
-    url: url,
-    desc: desc || "Chưa có mô tả."
-});
+    await addDoc(websitesRef, {
+      title,
+      url,
+      desc: desc || 'Chưa có mô tả.',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
 
-    saveWebsites();
     document.getElementById('new-title').value = '';
     document.getElementById('new-url').value = '';
     document.getElementById('new-desc').value = '';
-
-    if (unlocked) renderManageList();
-    renderSiteGrid();
-    updateHomeStats();
   });
 
   document.getElementById('clear-form-btn').addEventListener('click', () => {
@@ -1092,20 +1089,30 @@ function deleteWebsite(e){
     document.getElementById('new-desc').value = '';
   });
 
-  document.getElementById('delete-all-btn').addEventListener('click', () => {
+  document.getElementById('delete-all-btn').addEventListener('click', async () => {
     if (!confirm('Xoá toàn bộ website trong hub?')) return;
-    websites = [];
-    saveWebsites();
-    renderSiteGrid();
-    updateHomeStats();
-    if (unlocked) renderManageList();
+
+    const snapshot = [...websites];
+    for (const w of snapshot) {
+      await deleteDoc(doc(db, 'koifish_websites', w.id));
+    }
   });
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  // Realtime sync: mọi thiết bị mở cùng dữ liệu này sẽ tự cập nhật khi có thay đổi
+  onSnapshot(websitesRef, (snap) => {
+    websites = snap.docs.map(normalizeDoc).sort((a, b) => a.createdAt - b.createdAt);
+    updateHomeStats();
+    renderSiteGrid();
+    if (unlocked) renderManageList();
+  }, (err) => {
+    console.error(err);
+    alert('Không thể đồng bộ dữ liệu. Hãy kiểm tra Firebase config và Firestore.');
+  });
+
   updateHomeStats();
   renderSiteGrid();
-})();
 </script>
 
 <script>
