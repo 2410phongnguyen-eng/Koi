@@ -852,289 +852,277 @@ transform:translateY(-18px);
 
 <footer>© <span id="year"></span> KOIFISH — NISHIKI HUB</footer>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import {
-    getDatabase,
-    ref,
-    onValue,
-    push,
-    set,
-    update,
-    remove,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+<script>
+(() => {
+  const STORAGE_KEY = 'koifish_websites_v2_empty';
+  const PASSWORD = '24102011';
 
-  // 1) DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const sitesRef = ref(db, "websites");
-
-  const PASSWORD = "24102011"; // chỉ là khóa giao diện, không phải bảo mật thật
   let unlocked = false;
-  let websites = []; // sẽ luôn lấy từ Firebase
+  let websites = loadWebsites();
 
-  // ====== ELEMENTS ======
-  const $ = (s) => document.querySelector(s);
-  const $$ = (s) => document.querySelectorAll(s);
+function loadWebsites() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (_) {}
 
-  const siteGrid = $("#site-grid");
-  const manageList = $("#manage-list");
-  const statCount = $("#stat-count");
-  const yearEl = $("#year");
+    return [
 
-  const pwInput = $("#pw-input");
-  const unlockBtn = $("#unlock-btn");
-  const lockCard = $("#lock-card");
-  const lockError = $("#lock-error");
-  const managePanel = $("#manage-panel");
+        {
+            id:1,
+            title:"KOI DICTIONARY",
+            url:"https://2410phongnguyen-eng.github.io/-/",
+            desc:"Bạn có thể tra cứu các từ vựng Anh,Trung,Nhật,Việt.Bạn có thể luyện tập nghe, nói về các từ vựng trong từ điển để nâng cao vốn từ vừng."
+        },
 
-  const newTitle = $("#new-title");
-  const newUrl = $("#new-url");
-  const newDesc = $("#new-desc");
+        {
+            id:2,
+            title:"KOI LABORATORY",
+            url:"https://2410phongnguyen-eng.github.io/----/",
+            desc:"Nơi bạn có thể thực hành các thí nghiệm hóa học và mở khóa chất mới.Đồng thời,có thể thực hiện nhiều phương trình hóa học vô cơ và hữu cơ khác nhau."
+        }
 
-  // ====== HELPERS ======
-  function escapeHtml(str) {
-    return String(str ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    ];
+}
+
+  function saveWebsites() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(websites));
+    } catch (_) {}
   }
 
-  function normalizeList(data) {
-    if (!data || typeof data !== "object") return [];
-    return Object.entries(data)
-      .map(([id, w]) => ({
-        id,
-        title: w?.title ?? "",
-        url: w?.url ?? "",
-        desc: w?.desc ?? "",
-        createdAt: w?.createdAt ?? 0,
-        updatedAt: w?.updatedAt ?? 0
-      }))
-      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function nextId() {
+    return websites.reduce((max, w) => Math.max(max, Number(w.id) || 0), 0) + 1;
   }
 
   function updateHomeStats() {
-    statCount.textContent = String(websites.length).padStart(2, "0");
+    document.getElementById('stat-count').textContent = String(websites.length).padStart(2, '0');
   }
 
   function renderSiteGrid() {
-    if (!siteGrid) return;
+    const grid = document.getElementById('site-grid');
 
     if (!websites.length) {
-      siteGrid.innerHTML = `
-        <div class="empty-note">
-          Hub hiện chưa có website nào. Vào mục Quản lý để thêm website đầu tiên.
-        </div>
-      `;
+      grid.innerHTML = '<div class="empty-note">Hub hiện chưa có website nào. Vào mục Quản lý để thêm website đầu tiên.</div>';
       return;
     }
 
-    siteGrid.innerHTML = websites
-      .map((w, i) => {
-        const safeUrl = String(w.url || "#").trim();
-        return `
-          <div class="site-card">
-            <span class="tag">#${String(i + 1).padStart(2, "0")}</span>
-            <h3>${escapeHtml(w.title || "Không tên")}</h3>
-            <p>${escapeHtml(w.desc || "Chưa có mô tả.")}</p>
-            <a class="visit" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">
-              Truy cập website →
-            </a>
-          </div>
-        `;
-      })
-      .join("");
+    grid.innerHTML = websites.map((w, i) => {
+      const safeUrl = String(w.url || '#').trim();
+      return `
+        <div class="site-card">
+          <span class="tag">#${String(i + 1).padStart(2, '0')}</span>
+          <h3>${escapeHtml(w.title || 'Không tên')}</h3>
+          <p>${escapeHtml(w.desc || 'Chưa có mô tả.')}</p>
+          <a class="visit" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">Truy cập website →</a>
+        </div>
+      `;
+    }).join('');
   }
 
-  function renderManageList() {
-    if (!manageList) return;
+function renderManageList() {
+    const list = document.getElementById("manage-list");
 
-    manageList.innerHTML = "";
+    list.innerHTML = "";
 
-    if (!websites.length) {
-      manageList.innerHTML = `
-        <div class="empty-note">Chưa có website nào trong hub.</div>
-      `;
-      return;
+    if (websites.length === 0) {
+        list.innerHTML =
+            '<div class="empty-note">Chưa có website nào trong hub.</div>';
+        return;
     }
 
     websites.forEach((w) => {
-      const item = document.createElement("div");
-      item.className = "manage-item";
-      item.dataset.id = w.id;
 
-      item.innerHTML = `
+        const div = document.createElement("div");
+        div.className = "manage-item";
+        div.dataset.id = w.id;
+
+        div.innerHTML = `
         <div class="form-grid">
-          <div>
-            <label>Tên website</label>
-            <input class="f-title" value="${escapeHtml(w.title)}">
-          </div>
 
-          <div>
-            <label>URL</label>
-            <input class="f-url" value="${escapeHtml(w.url)}">
-          </div>
+            <div>
+                <label>Tên website</label>
+                <input class="f-title" value="${escapeHtml(w.title)}">
+            </div>
 
-          <div class="full">
-            <label>Mô tả</label>
-            <textarea class="f-desc">${escapeHtml(w.desc)}</textarea>
-          </div>
+            <div>
+                <label>URL</label>
+                <input class="f-url" value="${escapeHtml(w.url)}">
+            </div>
+
+            <div class="full">
+                <label>Mô tả</label>
+                <textarea class="f-desc">${escapeHtml(w.desc)}</textarea>
+            </div>
+
         </div>
 
         <div class="item-actions">
-          <button class="btn danger small act-delete" type="button">Xóa</button>
-          <button class="btn small act-save" type="button">Lưu</button>
+            <button class="btn danger small act-delete">Xóa</button>
+            <button class="btn small act-save">Lưu</button>
         </div>
 
         <div class="save-msg">Đã lưu.</div>
-      `;
+        `;
 
-      manageList.appendChild(item);
+        list.appendChild(div);
     });
 
-    manageList.querySelectorAll(".act-save").forEach((btn) => {
-      btn.onclick = saveWebsite;
+    list.querySelectorAll(".act-save").forEach(btn=>{
+        btn.onclick=saveWebsite;
     });
 
-    manageList.querySelectorAll(".act-delete").forEach((btn) => {
-      btn.onclick = deleteWebsite;
+    list.querySelectorAll(".act-delete").forEach(btn=>{
+        btn.onclick=deleteWebsite;
     });
-  }
+}
+function saveWebsite(e){
 
+    const item=e.target.closest(".manage-item");
+    const id=Number(item.dataset.id);
+
+    const w=websites.find(x=>x.id===id);
+
+    if(!w) return;
+
+    w.title=item.querySelector(".f-title").value.trim();
+    w.url=item.querySelector(".f-url").value.trim();
+    w.desc=item.querySelector(".f-desc").value.trim();
+
+    saveWebsites();
+
+    renderSiteGrid();
+
+    updateHomeStats();
+
+    item.querySelector(".save-msg").classList.add("show");
+
+    setTimeout(()=>{
+        item.querySelector(".save-msg").classList.remove("show");
+    },1200);
+}
+
+function deleteWebsite(e){
+
+    const item=e.target.closest(".manage-item");
+
+    const id=Number(item.dataset.id);
+
+    if(!confirm("Xóa website này?")) return;
+
+    websites=websites.filter(x=>x.id!==id);
+
+    saveWebsites();
+
+    renderManageList();
+
+    renderSiteGrid();
+
+    updateHomeStats();
+}
   function switchView(view) {
-    $$(".view").forEach((v) => v.classList.remove("active"));
-    const target = document.getElementById("view-" + view);
-    if (target) target.classList.add("active");
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = document.getElementById('view-' + view);
+    if (target) target.classList.add('active');
 
-    $$(".nav-link").forEach((btn) => {
-      btn.classList.toggle("active", btn.getAttribute("data-view") === view);
+    document.querySelectorAll('.nav-link').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-view') === view);
     });
 
-    if (view === "websites") renderSiteGrid();
-    if (view === "home") updateHomeStats();
-    if (view === "manage" && unlocked) renderManageList();
+    if (view === 'websites') renderSiteGrid();
+    if (view === 'home') updateHomeStats();
+    if (view === 'manage' && unlocked) renderManageList();
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function addWebsite() {
-    const title = newTitle.value.trim();
-    const url = newUrl.value.trim();
-    const desc = newDesc.value.trim();
+  document.querySelectorAll('[data-view]').forEach(el => {
+    el.addEventListener('click', () => switchView(el.getAttribute('data-view')));
+  });
 
-    if (!title || !url) {
-      alert("Vui lòng nhập tên và đường dẫn website.");
-      return;
-    }
-
-    const node = push(sitesRef);
-    await set(node, {
-      title,
-      url,
-      desc: desc || "Chưa có mô tả.",
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-
-    newTitle.value = "";
-    newUrl.value = "";
-    newDesc.value = "";
-  }
-
-  async function saveWebsite(e) {
-    const item = e.target.closest(".manage-item");
-    if (!item) return;
-
-    const id = item.dataset.id;
-    const title = item.querySelector(".f-title").value.trim();
-    const url = item.querySelector(".f-url").value.trim();
-    const desc = item.querySelector(".f-desc").value.trim();
-
-    await update(ref(db, `websites/${id}`), {
-      title,
-      url,
-      desc,
-      updatedAt: serverTimestamp()
-    });
-
-    const msg = item.querySelector(".save-msg");
-    msg.classList.add("show");
-    setTimeout(() => msg.classList.remove("show"), 1200);
-  }
-
-  async function deleteWebsite(e) {
-    const item = e.target.closest(".manage-item");
-    if (!item) return;
-
-    const id = item.dataset.id;
-    if (!confirm("Xóa website này?")) return;
-
-    await remove(ref(db, `websites/${id}`));
-  }
-
-  async function deleteAllSites() {
-    if (!confirm("Xoá toàn bộ website trong hub?")) return;
-    await remove(sitesRef);
-  }
+  const pwInput = document.getElementById('pw-input');
+  const unlockBtn = document.getElementById('unlock-btn');
+  const lockCard = document.getElementById('lock-card');
+  const lockError = document.getElementById('lock-error');
+  const managePanel = document.getElementById('manage-panel');
 
   function tryUnlock() {
     if (pwInput.value === PASSWORD) {
       unlocked = true;
-      lockCard.style.display = "none";
-      managePanel.classList.add("show");
+      lockCard.style.display = 'none';
+      managePanel.classList.add('show');
       renderManageList();
     } else {
-      lockError.classList.remove("show");
+      lockError.classList.remove('show');
       void lockError.offsetWidth;
-      lockError.classList.add("show");
+      lockError.classList.add('show');
     }
   }
 
-  // ====== REALTIME LISTENER ======
-  onValue(sitesRef, (snapshot) => {
-    websites = normalizeList(snapshot.val());
-    updateHomeStats();
+  unlockBtn.addEventListener('click', tryUnlock);
+  pwInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryUnlock();
+  });
+
+  document.getElementById('add-btn').addEventListener('click', () => {
+    const title = document.getElementById('new-title').value.trim();
+    const url = document.getElementById('new-url').value.trim();
+    const desc = document.getElementById('new-desc').value.trim();
+
+    if (!title || !url) {
+      alert('Vui lòng nhập tên và đường dẫn website.');
+      return;
+    }
+
+   websites.push({
+    id: Date.now(),
+    title: title,
+    url: url,
+    desc: desc || "Chưa có mô tả."
+});
+
+    saveWebsites();
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-url').value = '';
+    document.getElementById('new-desc').value = '';
+
+    if (unlocked) renderManageList();
     renderSiteGrid();
+    updateHomeStats();
+  });
+
+  document.getElementById('clear-form-btn').addEventListener('click', () => {
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-url').value = '';
+    document.getElementById('new-desc').value = '';
+  });
+
+  document.getElementById('delete-all-btn').addEventListener('click', () => {
+    if (!confirm('Xoá toàn bộ website trong hub?')) return;
+    websites = [];
+    saveWebsites();
+    renderSiteGrid();
+    updateHomeStats();
     if (unlocked) renderManageList();
   });
 
-  // ====== EVENTS ======
-  $$(".nav-link, .brand, .hero-actions [data-view]").forEach((el) => {
-    el.addEventListener("click", () => {
-      const view = el.getAttribute("data-view");
-      if (view) switchView(view);
-    });
-  });
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-  unlockBtn.addEventListener("click", tryUnlock);
-  pwInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") tryUnlock();
-  });
-
-  $("#add-btn").addEventListener("click", addWebsite);
-  $("#clear-form-btn").addEventListener("click", () => {
-    newTitle.value = "";
-    newUrl.value = "";
-    newDesc.value = "";
-  });
-  $("#delete-all-btn").addEventListener("click", deleteAllSites);
-
-  yearEl.textContent = new Date().getFullYear();
   updateHomeStats();
+  renderSiteGrid();
+})();
 </script>
 
 <script>
