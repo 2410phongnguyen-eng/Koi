@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="google-site-verification" content="QHjzTogrg3FK_PdIWnn3iVLL14gUD_0pHZadAa_fqj8" />
 <title>KOIFISH — Kho tàng website</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -666,7 +666,7 @@ transform:translateY(-18px);
     display:block;
 }
 </style>
-<meta name="google-site-verification" content="QHjzTogrg3FK_PdIWnn3iVLL14gUD_0pHZadAa_fqj8" />
+
 </head>
 <body>
 
