@@ -883,6 +883,13 @@ function loadWebsites() {
             url:"https://2410phongnguyen-eng.github.io/KOIMUSIC/",
             desc:"Nơi bạn có thể kiến tạo một không gian âm nhạc không giới hạn của riêng mình. Bạn có thể nghe nhạc, tạo nhạc, tạo danh sách phát và chia sẻ với bạn bè."
         },
+
+        {
+            id:4,
+            title:"KOI HOROSCOPE",
+            url:"https://2410phongnguyen-eng.github.io/KOIHOROSCOPE/",
+            desc:"Nơi bạn có thể chiêm nghiệm vận số của riêng mình. Bạn có thể gieo quẻ kinh dịch và luận tử vi của chính mình"
+        }, 
     ];
 }
 
