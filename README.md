@@ -1282,7 +1282,9 @@ function deleteWebsite(e){
 // Danh sách các link được phép hiển thị
 const allowedLinks = [
     "https://2410phongnguyen-eng.github.io/KOIMUSIC/",
-
+"https://www.tiktok.com/@_oki__ne_" ,
+"//www.facebook.com/share/1Uj8VCKwVm/",
+  "0367634821"
 ];
 
 // Duyệt tất cả thẻ <a>
