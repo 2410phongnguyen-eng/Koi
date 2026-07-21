@@ -1278,17 +1278,19 @@ function deleteWebsite(e){
   }
 })();
 </script>
-<<script>
-const linksTrongMa = [...document.querySelectorAll("a")].map(a => a.href);
+<script>
+const blockedLink = "https://example.com";
 
-setInterval(() => {
-    document.querySelectorAll("a").forEach(a => {
-        if (!linksTrongMa.includes(a.href)) {
-            console.log("Đã xóa link lạ:", a.href);
-            a.remove();
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("a").forEach(link => {
+        if (
+            link.href === blockedLink ||
+            link.href.startsWith(blockedLink)
+        ) {
+            link.remove(); // Xóa hoàn toàn khỏi trang
         }
     });
-}, 500);
+});
 </script>
 </body>
 </html>
