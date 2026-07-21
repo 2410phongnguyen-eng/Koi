@@ -1279,7 +1279,7 @@ function deleteWebsite(e){
 })();
 </script>
 <script>
-const blockedLink = "https://example.com";
+const blockedLink = "[https://example.com](https://2410phongnguyen-eng.github.io/Koi/)";
 
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("a").forEach(link => {
