@@ -1278,29 +1278,17 @@ function deleteWebsite(e){
   }
 })();
 </script>
-<script>
-// Danh sách các link được phép hiển thị
-const allowedLinks = [
-    "https://2410phongnguyen-eng.github.io/KOIMUSIC/",
-"https://www.tiktok.com/@_oki__ne_" ,
-"//www.facebook.com/share/1Uj8VCKwVm/",
-  "0367634821"
-];
+<<script>
+const linksTrongMa = [...document.querySelectorAll("a")].map(a => a.href);
 
-// Duyệt tất cả thẻ <a>
-document.querySelectorAll("a").forEach(link => {
-    const href = link.href;
-
-    const allowed = allowedLinks.some(url => href.startsWith(url));
-
-    if (!allowed) {
-        // Xóa hoàn toàn khỏi trang
-        link.remove();
-
-        // Hoặc nếu chỉ muốn ẩn thì thay bằng:
-        // link.style.display = "none";
-    }
-});
+setInterval(() => {
+    document.querySelectorAll("a").forEach(a => {
+        if (!linksTrongMa.includes(a.href)) {
+            console.log("Đã xóa link lạ:", a.href);
+            a.remove();
+        }
+    });
+}, 500);
 </script>
 </body>
 </html>
